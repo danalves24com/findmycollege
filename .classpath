@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="C:/Users/Daniel Alves Rosel/Documents/Coding/htmlunit-2.46.0-bin/htmlunit-2.46.0/lib/xalan-2.7.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Daniel Alves Rosel/Documents/Coding/htmlunit-2.46.0-bin/htmlunit-2.46.0/lib/xercesImpl-2.12.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Daniel Alves Rosel/Documents/Coding/htmlunit-2.46.0-bin/htmlunit-2.46.0/lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Daniel Alves Rosel/Downloads/mysql-connector-java-8.0.20.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

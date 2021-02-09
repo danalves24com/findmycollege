@@ -1,11 +1,6 @@
 package cscrape.scrape;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -15,53 +10,24 @@ import com.gargoylesoftware.htmlunit.html.HtmlTable;
 
 import uni.profile;
 
-class writer {
-	private String data;
-	public writer(String data) {
-		this.data = data;
-	}
-	public void write() {	    
-	    FileOutputStream outputStream;
-		try {
-			outputStream = new FileOutputStream("colleges.md");
-			byte[] strToBytes = this.data.getBytes();
-			outputStream.write(strToBytes);
-			outputStream.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	    	    
-	}
-}
-
-public class screap_specific {
-	
-	
-	// USER PARAMETERS 
-	// TODO add to args?
-	
-	String[] programs = {"Computer Science", "Business", "Engineering", "Managment"};
-	String type = "private";
-	Integer MaxCost = 50000, schoolsScraped = 0;		
-	
-	
-	
+public class scrape_all_colleges {
+	private write_to_database db;
 	private String report = "";
 	private ArrayList<String> schools = new ArrayList<String>();
 	private ArrayList<profile> collegeData = new ArrayList<profile>();
 	private String url = "";
 	WebClient client = new WebClient();
 
-	public screap_specific(String Url) {
+	public scrape_all_colleges(String Url) {
+		db = new write_to_database();
+		db.connect();
 		this.url = Url;
 		client.getOptions().setJavaScriptEnabled(true);
 		client.getOptions().setCssEnabled(true);
 		client.getOptions().setThrowExceptionOnScriptError(false);
 	}
 	public void scrape() {
+		
 		try {
 			HtmlPage page = client.getPage(this.url);
 			String path = "//*[@id=\"mw-content-text\"]/div/ul/li/a";
@@ -104,7 +70,10 @@ public class screap_specific {
 						if(table.size() > 0 ) {
 							for(Object tb : table) {
 								String tab = (((HtmlTable)tb).asText());
+								String[] intel = new String[9];
 								String[] dt = tab.split("\n");
+								
+																
 								for(String d : dt) {
 									d=d.toLowerCase();
 									if(d.contains("location")) {										
@@ -126,25 +95,20 @@ public class screap_specific {
 										Profile.setStudents(d.split("\t")[1]);
 									}
 								}
+								
+								System.out.println(db.exists(Profile.name));
+								if(!collegeData.contains(Profile)) {
+									if(db.exists(Profile.name)) {
+										
+									}
+									else {
+										db.Insert(new String[] {Profile.name, Profile.type, Profile.location, "", Profile.price, Profile.Web, "", Profile.students, ""});
+										collegeData.add(Profile);										
+									}
+								}
 //								System.out.println(Arrays.toString(tab.split("\n")));
 							}
-						}
-						Profile.generateScore(programs, data, type);
-						String singularReport = Profile.getProfile();
-						report += singularReport;
-						//collegeData.add(Profile);
-						schoolsScraped+=1;
-						
-						// THIS GOES BYE BYE ONCE I DONT NEED TO TEST
-						if(schoolsScraped%4==0) {
-							writer w = new writer(report);
-							w.write();
-						}
-						
-						System.out.println("-------- COUNT: "+schoolsScraped);
-						
-						
-//						collegeData.add(data);												
+						}			
 					}
 				}
 			}
@@ -152,19 +116,5 @@ public class screap_specific {
 				e.printStackTrace();
 			}
 		}
-	}
-	public String getBestColleges() {
-		ArrayList<String> allBest = new ArrayList<String>();
-		ArrayList<Double> pScores = new ArrayList<Double>();
-
-		Double bestScore = 0.0;
-		Integer bestScoreIndex = null;		
-		Integer index = 0;
-		for(Double score : pScores) {
-			if(score > bestScore) bestScoreIndex = index;
-			index+=1;
-		}
-		String bestSchool = schools.get(bestScoreIndex);
-		return bestSchool;
 	}
 }
