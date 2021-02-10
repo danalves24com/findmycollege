@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class profile {
 	
 	private String mod(String in) {
+		if(in == null ) {return null;}
 		if (in.contains("(")) {
 			in = in.substring(0, in.indexOf("("));
 		}
@@ -18,7 +19,7 @@ public class profile {
 	
 	
 	// some vars
-	public String name, location, type, established, Web, price, students;	
+	public String name, location, type, established, Web, price, students, programs, acr;	
 	private Double score;
 	// constructor duh
 	public profile(String Name) {
@@ -28,11 +29,12 @@ public class profile {
 	// all the setters
 	public void setLocation(String loc) {this.location = loc.contains(",")?loc.split(",")[loc.split(",").length-1].trim():loc.trim();}
 	public void setType(String tye) {this.type = tye.toLowerCase().contains("private")?"private":"public";}
-	public void setPrice(String p) {this.price = mod(p);}	
+	public void setPrice(String p) {if(p.equals("Not reported") || p==null) {} else {this.price = mod(p.replaceAll(",", ""));}}	
 	public void setStudents (String s) { this.students = mod(s.replaceAll(",", "")); }		
 	public void setEstablished (String year) {this.established = year;}
 	public void setWeb(String site) {this.Web = site!=""&&site.contains(".")?site:null;}
-	
+	public void setPrograms(String lst) {this.programs = lst;}
+	public void setACR(String acr) {this.acr = acr;}
 	// helper methods	
 	private Double low = 0.1E-10;
 	private Double high = 1- low;

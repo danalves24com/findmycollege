@@ -116,5 +116,6 @@ public class scrape_all_colleges {
 				e.printStackTrace();
 			}
 		}
+		db.close();
 	}
 }

@@ -1,14 +1,16 @@
 package cscrape.main;
 import java.sql.SQLException;
 
+import api.SendEmail;
 import api.src;
 import cscrape.scrape.scrape_all_colleges;
 import cscrape.scrape.scrape_all_erasmus;
 import cscrape.scrape.screap_specific;
+import cscrape.scrape.screape_american;
 import cscrape.scrape.write_to_database;
 public class main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		
 		
 		
@@ -27,29 +29,26 @@ public class main {
 
 		
 		
+		
+		
+		
  	/* 	GET ALL FROM WIKI
  	 * 
- 	 * 	scrape_all_colleges all = new scrape_all_colleges(new src().Wikipedia());
-		all.scrape();
-		all.getData();
+ 	 * 	
  	 * 
  	 */
 		
 /*
  * 		
  
- 		write_to_database db = new write_to_database();
-		try {
-			db.connect();
-			System.out.println();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
- */
-		
-
+ 
+ 
+ 		screape_american sa = new screape_american();
+		sa.begin();
+ 
+ 
+ 
+ 		scrape_all_colleges all = new scrape_all_colleges(new src().Wikipedia());
 		scrape_all_erasmus er = new scrape_all_erasmus();
 		try {
 			er.begin();
@@ -58,6 +57,17 @@ public class main {
 			e.printStackTrace();
 		}
 		
+		
+		all.scrape();
+		all.getData();
+		
+
+		
+ */
+
+
+		SendEmail mail = new SendEmail();
+		mail.send();
 		
 	}
 

@@ -30,15 +30,16 @@ public class write_to_database {
 		return find.equals(name);
 	}
 	public void Insert(String[] params) {
-		String sql = "INSERT INTO list (Name, Type, Location, Programms, Price, About, StudyLanguage, Students, misc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO list (Name, Type, Location, Programms, Price, About, StudyLanguage, Students, misc, admissionRate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		PreparedStatement statement;
 		try {
 			statement = con.prepareStatement(sql);
 			Integer index = 1;
 			for(String param : params) {
-				statement.setString(index, param);
+				statement.setString(index, param==null?null:param.trim().replaceAll("'", ""));
 				index+=1;
 			}
+			System.out.println(statement);
 			int rowsInserted;
 			rowsInserted = statement.executeUpdate();
 			if (rowsInserted > 0) {
@@ -50,7 +51,14 @@ public class write_to_database {
 		}
 		
 	}
-
+	public void close() {
+		try {
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void connect() {		
 	      
 	      try {
