@@ -51,8 +51,8 @@ public class SendEmail {
             msg.setText(EMAIL_TEXT);
             
             msg.setSentDate(new Date());
-
-            // Get SMTPTransport
+            
+            // Get SMTPTransport	
             SMTPTransport t = (SMTPTransport) session.getTransport("smtp");
             
             // connect
