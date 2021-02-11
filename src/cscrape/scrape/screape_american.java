@@ -12,12 +12,10 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import GET.get;
 import api.src;
 import uni.profile;
 
 public class screape_american {
-	private get GET = new get();
 	private write_to_database db = new write_to_database();
 	private Integer gin(String val) {
 		String st = "";
