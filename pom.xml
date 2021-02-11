@@ -19,8 +19,7 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-  <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+  <dependencies>  
 	<dependency>
 	    <groupId>javax.json</groupId>
 	    <artifactId>javax.json-api</artifactId>
@@ -30,8 +29,7 @@
 		  <groupId>org.glassfish</groupId>
 		  <artifactId>javax.json</artifactId>
 		  <version>1.0.4</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+	</dependency>	
 	<dependency>
 	    <groupId>javax.mail</groupId>
 	    <artifactId>mail</artifactId>
