@@ -117,7 +117,7 @@ public class scrape_all_erasmus {
 	
 												
 						System.out.println(Profile.programs);
-						db.Insert(new String[] {Profile.name, Profile.type, Profile.location, Profile.programs, Profile.price, Profile.Web, "", Profile.students, ""});
+						db.Insert(new String[] {Profile.name, Profile.type, Profile.location, Profile.programs, Profile.price, Profile.Web, "", Profile.students, Profile.acr});
 				}
 			}
 			} catch (FailingHttpStatusCodeException e) {

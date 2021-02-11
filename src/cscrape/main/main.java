@@ -49,13 +49,7 @@ public class main {
  
  
  		scrape_all_colleges all = new scrape_all_colleges(new src().Wikipedia());
-		scrape_all_erasmus er = new scrape_all_erasmus();
-		try {
-			er.begin();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		
 		
 		all.scrape();
@@ -66,8 +60,13 @@ public class main {
  */
 
 
-		SendEmail mail = new SendEmail();
-		mail.send();
+		scrape_all_erasmus er = new scrape_all_erasmus();
+		try {
+			er.begin();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
