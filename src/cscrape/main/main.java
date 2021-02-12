@@ -8,6 +8,8 @@ import cscrape.scrape.scrape_all_erasmus;
 import cscrape.scrape.screap_specific;
 import cscrape.scrape.screape_american;
 import cscrape.scrape.write_to_database;
+import cscrape.velo.connection.DatabaseConnection;
+import cscrape.velo.profiles.Entry;
 public class main {
 
 	public static void main(String[] args) throws SQLException {
@@ -56,10 +58,6 @@ public class main {
 		all.getData();
 		
 
-		
- */
-
-
 		scrape_all_erasmus er = new scrape_all_erasmus();
 		try {
 			er.begin();
@@ -67,6 +65,25 @@ public class main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+ */
+
+
+		
+		
+		
+		DatabaseConnection con = new DatabaseConnection();
+		con.openConnection();
+		
+		
+		Entry school = new Entry();
+		
+		
+		school.setName("Harward");
+		school.setLocation("not here");
+		school.UploadSelf(con);
+		
+
 		
 	}
 

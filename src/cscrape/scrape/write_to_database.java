@@ -61,6 +61,17 @@ public class write_to_database {
 	}
 	public void connect() {		
 	      
-      
+	      try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	      try {
+	         con = DriverManager.getConnection("jdbc:mysql://localhost:3306/edi?useSSL=false", "root", "");	         
+	         System.out.println("Connection is successful !!!!!");
+	      } catch(Exception e) {
+	         e.printStackTrace();
+	      }	       
 	}
 }
