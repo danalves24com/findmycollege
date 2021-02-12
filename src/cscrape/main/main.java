@@ -1,8 +1,12 @@
 package cscrape.main;
+import java.io.IOException;
 import java.sql.SQLException;
+
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 import api.SendEmail;
 import api.src;
+import cscrape.scrape.icu;
 import cscrape.scrape.scrape_all_colleges;
 import cscrape.scrape.scrape_all_erasmus;
 import cscrape.scrape.screap_specific;
@@ -57,7 +61,10 @@ public class main {
 		all.scrape();
 		all.getData();
 		
+<<<<<<< HEAD
 
+=======
+>>>>>>> 86fc0f35b2f486437810702364009355311763d0
 		scrape_all_erasmus er = new scrape_all_erasmus();
 		try {
 			er.begin();
@@ -66,6 +73,7 @@ public class main {
 			e.printStackTrace();
 		}
 		
+<<<<<<< HEAD
 				Entry school = new Entry();
 		
 		
@@ -86,6 +94,17 @@ public class main {
 		
 		
 
+=======
+ */
+
+		icu ICU = new icu();
+		try {
+			ICU.scrape();
+		} catch (FailingHttpStatusCodeException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+>>>>>>> 86fc0f35b2f486437810702364009355311763d0
 
 		
 	}
