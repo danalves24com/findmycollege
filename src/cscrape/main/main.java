@@ -61,10 +61,6 @@ public class main {
 		all.scrape();
 		all.getData();
 		
-<<<<<<< HEAD
-
-=======
->>>>>>> 86fc0f35b2f486437810702364009355311763d0
 		scrape_all_erasmus er = new scrape_all_erasmus();
 		try {
 			er.begin();
@@ -73,7 +69,7 @@ public class main {
 			e.printStackTrace();
 		}
 		
-<<<<<<< HEAD
+
 				Entry school = new Entry();
 		
 		
