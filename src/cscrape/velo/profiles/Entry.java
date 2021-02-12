@@ -1,9 +1,14 @@
+/*
+ * 
+ */
 package cscrape.velo.profiles;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.entity.SerializableEntity;
 
@@ -32,10 +37,11 @@ public class Entry implements Serializable {
 	
 
 	/** The population. */
-	private Integer population, admissionRate;
+	private Integer population, admissionRate, studentEnrollment, academicStaff;
 	
+
 	/** The is international. */
-	private Boolean isInternational;
+	private Boolean isInternational, isSelective;
 	/** The courses. */
 	private ArrayList<Course> courses;
 	
@@ -43,6 +49,105 @@ public class Entry implements Serializable {
 	private SchoolType type;
 	
 	
+	/**
+	 * Show.
+	 */
+	public void show() {
+		Class<?> cl = this.getClass();
+		List<Object> allObjects = new ArrayList<Object>();
+		for (java.lang.reflect.Field f: cl.getDeclaredFields())
+		{
+		    f.setAccessible(true);
+		    try
+		    {
+		        Object o = f.get(this);
+				if(o!=null) {
+					System.out.print(f.getName());
+			        System.out.print("\t"+ o + "\n");	
+				}
+		        		        
+		    }
+		    catch (Exception e)
+		    {
+		        e.printStackTrace();
+		    }
+		}
+		for (Object o: allObjects) {
+
+		}		    
+		
+
+	}
+	
+	
+	
+	/**
+	 * Gets the checks if is selective.
+	 *
+	 * @return the checks if is selective
+	 */
+	public Boolean getIsSelective() {
+		return isSelective;
+	}
+
+
+	/**
+	 * Gets the student enrollment.
+	 *
+	 * @return the student enrollment
+	 */
+	public Integer getStudentEnrollment() {
+		return studentEnrollment;
+	}
+
+
+
+	/**
+	 * Sets the student enrollment.
+	 *
+	 * @param studentEnrollment the new student enrollment
+	 */
+	public void setStudentEnrollment(Integer studentEnrollment) {
+		this.studentEnrollment = studentEnrollment;
+	}
+
+
+
+	/**
+	 * Gets the academic staff.
+	 *
+	 * @return the academic staff
+	 */
+	public Integer getAcademicStaff() {
+		return academicStaff;
+	}
+
+
+
+	/**
+	 * Sets the academic staff.
+	 *
+	 * @param academicStaff the new academic staff
+	 */
+	public void setAcademicStaff(Integer academicStaff) {
+		this.academicStaff = academicStaff;
+	}
+
+
+	/**
+	 * Sets the checks if is selective.
+	 *
+	 * @param isSelective the new checks if is selective
+	 */
+	public void setIsSelective(Boolean isSelective) {
+		this.isSelective = isSelective;
+	}
+
+
+
+
+
+
 	/**
 	 * Gets the population.
 	 *
@@ -54,12 +159,6 @@ public class Entry implements Serializable {
 
 
 
-	/**
-	 * Instantiates a new entry.
-	 *
-	 * @param input the input
-	 * @return the string
-	 */
 
 		
 	
@@ -280,7 +379,7 @@ public class Entry implements Serializable {
 	
 	
 	
-	
+
 	
 	
 }
