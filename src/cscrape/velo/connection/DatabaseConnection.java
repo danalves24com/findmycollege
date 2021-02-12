@@ -1,6 +1,9 @@
 package cscrape.velo.connection;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Blob;
 import java.sql.Connection;
@@ -10,7 +13,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
@@ -77,8 +82,40 @@ public class DatabaseConnection {
 		}
 	    return blob;
     }
+    
+    /**
+     * From byte array to object.
+     *
+     * @param byteArr the byte arr
+     * @return the object
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
+    private static Object fromByteArrayToObject(byte[] byteArr) throws IOException, ClassNotFoundException {
+		if (Objects.nonNull(byteArr)) {
+		ByteArrayInputStream bis =
+		        new ByteArrayInputStream(byteArr);
+		ObjectInput in = new ObjectInputStream(bis);
+		return in.readObject();
+		}
+		return null;
+    }
 	
-	
+	/**
+	 * Convert blob to entry.
+	 *
+	 * @param blob the blob
+	 * @return the entry
+	 * @throws ClassNotFoundException the class not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws SQLException the SQL exception
+	 */
+	private Entry convertBlobToEntry(Blob blob) throws ClassNotFoundException, IOException, SQLException {
+		int blobLength = (int) blob.length();  
+		byte[] blobAsBytes = blob.getBytes(1, blobLength);
+		return (Entry) fromByteArrayToObject(blobAsBytes);
+		
+	}
    
     
     
@@ -108,6 +145,46 @@ public class DatabaseConnection {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	/**
+	 * Gets the entry.
+	 *
+	 * @param name the name
+	 * @return the entry
+	 * @throws SQLException the SQL exception
+	 */
+	public Entry getEntry(String name) throws SQLException {
+		String sql = "SELECT data FROM blobs where Name='"+name+"'";
+		 
+		Statement statement = con.createStatement();
+		ResultSet result = statement.executeQuery(sql);
+		 
+		int count = 0;
+		Blob blob = null;
+		while (result.next()){
+		    
+			blob = result.getBlob(1);
+		}
+		
+		Entry out = null;
+		try {
+			out = convertBlobToEntry(blob);			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return out;
+		
+	}
+	
 	
 	/**
 	 * Open connection.

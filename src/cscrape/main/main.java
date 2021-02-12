@@ -66,23 +66,26 @@ public class main {
 			e.printStackTrace();
 		}
 		
- */
-
-
-		
-		
-		
-		DatabaseConnection con = new DatabaseConnection();
-		con.openConnection();
-		
-		
-		Entry school = new Entry();
+				Entry school = new Entry();
 		
 		
 		school.setName("Harward");
 		school.setLocation("not here");
 		school.UploadSelf(con);
 		
+
+		
+		
+		
+ */
+
+
+		
+		// test
+		
+		
+		
+
 
 		
 	}
