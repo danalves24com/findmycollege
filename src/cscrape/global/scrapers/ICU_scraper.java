@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package cscrape.global.scrapers;
 
 import java.io.IOException;
@@ -18,6 +21,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 
 import cscrape.velo.connection.DatabaseConnection;
 import cscrape.velo.profiles.Entry;
+import cscrape.velo.profiles.SchoolType;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -28,7 +32,7 @@ public class ICU_scraper implements scraper {
 	/** The facilities and services. */
 	private String nameXpath = "/html/body/div[3]/div[4]/div[1]/div/div[2]/table/tbody/tr[1]/td/a",
 			admissionsTable = "/html/body/div[3]/div[7]/div[2]/div/div[2]/table/tbody/tr",
-			sizeAndProfileTable = "/html/body/div[3]/div[8]/div[2]/div/div[1]/table",
+			sizeAndProfileTable = "/html/body/div[3]/div[8]/div[2]/div/div[1]/table/tbody/tr",
 			facilitiesAndServices = "/html/body/div[3]/div[9]/div[2]/div/div";
 	
 	
@@ -89,13 +93,11 @@ public class ICU_scraper implements scraper {
 				link = "https://www.4icu.org" + link;
 				System.out.println(link);
 				HtmlPage s = client.getPage(link);
-				generateReportFromPage(s);	
-				try {
-					TimeUnit.SECONDS.sleep(2);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(s.getWebResponse().getStatusCode() != 404) {
+					generateReportFromPage(s);	
 				}
+				else {}
+
 			}
 		}
 		
@@ -141,7 +143,7 @@ public class ICU_scraper implements scraper {
 		List<?> names = page.getByXPath(nameXpath);
 		Boolean isValid = false;
 		for(Object op : names) {
-			String nameString = ( (HtmlAnchor)op ).asText();			
+			String nameString = ( (HtmlAnchor) op ).asText();			
 			if(isAlphaic(nameString.replaceAll(" ", ""))) {
 				E.setName(nameString);
 				isValid=true;
@@ -153,25 +155,87 @@ public class ICU_scraper implements scraper {
 				HtmlTableRow row = ((HtmlTableRow) param);				
 				String[] rowString = row.asText().split("\t");
 				
-				rowString[0] = rowString[0].toLowerCase();
-				rowString[1] = rowString[1].toLowerCase();
-				if(!rowString[0].contains("not reported")) {
-					if(rowString[0].contains("gender")) {
-						E.setGender(rowString[1].contains("coed")?"coed":rowString[1].contains("men")?"men":"women");
+				String  title = rowString[0].toLowerCase().trim(),
+						body= rowString[1].toLowerCase().trim();
+				
+				if(!body.equals("not reported")) {
+					
+					
+					if(title.contains("gender")) {
+						E.setGender(body.contains("coed")?"coed":body.contains("men")?"men":"women");
 					}
-					else if (rowString[0].contains("International")) {
+					
+					
+					else if (title.contains("international")) {
 						E.setIsInternational(rowString[1].contains("yes"));
 					}
-					else if (rowString[0].contains("Rate")) {
-						E.setAdmissionRate(Integer.valueOf(rowString[1].replace("%", "")));
-					}
-					else if (rowString[0].contains("Selection")) {
+					
+					
+					else if (title.contains("rate")) {
+						body = body.replace("%", "");
+						if(body.contains("-")) {
+							body = body.split("-")[0]; // the the lower ACC Rate	
+						}
+						else {}
+						E.setAdmissionRate(Integer.valueOf(body));
 						
 					}
+					
+					
+					else if (title.contains("selection")) {
+						E.setSelectionType(body);
+						E.setIsSelective(body.contains("yes"));
+					}
+					
+					
 					else {
 						
 					}
+					
+					
 				}
+			}
+			
+			
+			
+			List<?> profile = page.getByXPath(sizeAndProfileTable);
+			for(Object dat : profile) {
+				HtmlTableRow row = ((HtmlTableRow) dat);
+				String[] r = row.asText().split("\t");
+				String title = r[0].toLowerCase().trim(),
+						body = r[1].toLowerCase().trim();
+				
+				if(!body.equals("not reported")) { 
+					
+					
+					if(title.contains("enrollment")) {
+						String e = body;
+						if(e.contains("-")) {e = e.split("-")[1];} else {}
+						E.setStudentEnrollment(Integer.valueOf(e));
+					}
+					
+					else if (title.contains("staff")) {
+						String s = body;
+						if(s.contains("-")) {s = s.split("-")[1];}
+						E.setAcademicStaff(Integer.valueOf(s));
+					}
+					
+					else if (title.contains("type")) {
+						E.setType(body.equals("private")?SchoolType.PRIVATE:SchoolType.PUBLIC);
+					}
+				}
+				
+			}
+			
+			
+			
+			
+			E.show();
+			try {
+				TimeUnit.SECONDS.sleep(4);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			E.UploadSelf(new DatabaseConnection());
 		}
