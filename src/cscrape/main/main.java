@@ -94,17 +94,6 @@ public class main {
 		
 		
 
-=======
- */
-
-		icu ICU = new icu();
-		try {
-			ICU.scrape();
-		} catch (FailingHttpStatusCodeException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
->>>>>>> 86fc0f35b2f486437810702364009355311763d0
 
 		
 	}
