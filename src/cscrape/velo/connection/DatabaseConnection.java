@@ -1,4 +1,11 @@
 package cscrape.velo.connection;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -6,6 +13,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import cscrape.velo.profiles.Entry;
 
@@ -15,9 +28,10 @@ import cscrape.velo.profiles.Entry;
  */
 public class DatabaseConnection {
 	
-	/** The password. */
-	private String url = "jdbc:mysql://10.0.1.23:3306/edi", username = "root", password = "";
+	/** The connection params. */
+	private String url = "jdbc:mysql://localhost:3306/edi", username = "root", password = "";
 	
+	/** The con. */
 	private static Connection con = null;
 	
 	/**
@@ -31,30 +45,100 @@ public class DatabaseConnection {
 	 * Instantiates a new connection.
 	 *
 	 * @param URL the url
+	 * @param uName the u name
+	 * @param psswd the psswd
 	 */
-	public DatabaseConnection (String URL) {
+	public DatabaseConnection (String URL, String uName, String psswd) {
 		this.url = URL;
+		this.username = uName;
+		this.password = psswd;
 	}
 	
 	
-	public void addEntry(Entry entry) {
+    /**
+     * Convert entry to blob.
+     *
+     * @param entry the entry
+     * @return the blob
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private Blob convertEntryToBlob(Entry entry) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();                 
+		ObjectOutputStream objOstream = new ObjectOutputStream(baos);                 
+		objOstream.writeObject(entry);                   
+		objOstream.flush();                 
+		objOstream.close();                   
+		byte[] bArray = baos.toByteArray(); 
 		
+	    Blob blob = null;
+	    try {
+			blob = new SerialBlob(bArray);
+		} catch (SerialException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	    return blob;
+    }
+    
+    /**
+     * From byte array to object.
+     *
+     * @param byteArr the byte arr
+     * @return the object
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
+    private static Object fromByteArrayToObject(byte[] byteArr) throws IOException, ClassNotFoundException {
+		if (Objects.nonNull(byteArr)) {
+		ByteArrayInputStream bis =
+		        new ByteArrayInputStream(byteArr);
+		ObjectInput in = new ObjectInputStream(bis);
+		return in.readObject();
+		}
+		return null;
+    }
+	
+	/**
+	 * Convert blob to entry.
+	 *
+	 * @param blob the blob
+	 * @return the entry
+	 * @throws ClassNotFoundException the class not found exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws SQLException the SQL exception
+	 */
+	private Entry convertBlobToEntry(Blob blob) throws ClassNotFoundException, IOException, SQLException {
+		int blobLength = (int) blob.length();  
+		byte[] blobAsBytes = blob.getBytes(1, blobLength);
+		return (Entry) fromByteArrayToObject(blobAsBytes);
 		
-		String sql = "INSERT INTO list (Name, Type, Location, Programms, Price, About, StudyLanguage, Students, misc, admissionRate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		Object[] values = {entry.getName()};
+	}
+   
+    
+    
+	
+	/**
+	 * Adds the entry.
+	 *
+	 * @param entry the entry
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public void addEntry(Entry entry) throws IOException {				
+
+		String sql = "INSERT INTO blobs (Name, data) VALUES (?, ?)";
 		PreparedStatement statement;
 		try {
 			statement = con.prepareStatement(sql);
-			Integer index = 1;
-			for(String param : ( new String[] {"idk"})) {
-				statement.setString(index, param==null?null:param.trim().replaceAll("'", ""));
-				index+=1;
-			}
+			statement.setString(1, (String) entry.getName());
+			statement.setBlob(2, convertEntryToBlob(entry));
 			System.out.println(statement);
 			int rowsInserted;
 			rowsInserted = statement.executeUpdate();
 			if (rowsInserted > 0) {
-				
+				// inserted - success
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -62,21 +146,60 @@ public class DatabaseConnection {
 		}
 	}
 	
+	
+	/**
+	 * Gets the entry.
+	 *
+	 * @param name the name
+	 * @return the entry
+	 * @throws SQLException the SQL exception
+	 */
+	public Entry getEntry(String name) throws SQLException {
+		String sql = "SELECT data FROM blobs where Name='"+name+"'";
+		 
+		Statement statement = con.createStatement();
+		ResultSet result = statement.executeQuery(sql);
+		 
+		int count = 0;
+		Blob blob = null;
+		while (result.next()){
+		    
+			blob = result.getBlob(1);
+		}
+		
+		Entry out = null;
+		try {
+			out = convertBlobToEntry(blob);			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return out;
+		
+	}
+	
+	
 	/**
 	 * Open connection.
 	 */
 	public void openConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection(this.url, this.username, this.password);
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-	    try {
-	    	con = DriverManager.getConnection(this.url, this.username, this.password);	         	         
-	    } catch(Exception e) {
-	         e.printStackTrace();
-	      }	 
 	}
 	
 	
