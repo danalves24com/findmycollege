@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.entity.SerializableEntity;
@@ -63,6 +65,29 @@ public class Entry implements Serializable {
 	/** The type. */
 	private SchoolType type;
 
+	
+	
+	public String getReport() {
+		HashMap<String, String> index = new HashMap<String, String>();
+		Class<?> cl = this.getClass();
+		List<Object> allObjects = new ArrayList<Object>();
+		for (java.lang.reflect.Field f : cl.getDeclaredFields()) {
+			f.setAccessible(true);
+			try {
+				Object o = f.get(this);
+				if (o != null) {
+					index.put(f.getName(), String.valueOf(o));
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return index.toString();
+	}
+	
+	
+	
 	/**
 	 * Show.
 	 */
