@@ -1,4 +1,5 @@
 package cscrape.velo.connection;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,51 +28,50 @@ import cscrape.velo.profiles.Entry;
  * The Class Connection.
  */
 public class DatabaseConnection {
-	
+
 	/** The connection params. */
 	private String url = "jdbc:mysql://localhost:3306/edi", username = "root", password = "";
-	
+
 	/** The con. */
 	private static Connection con = null;
-	
+
 	/**
 	 * Instantiates a new connection.
 	 */
-	public DatabaseConnection () {
-		
+	public DatabaseConnection() {
+
 	}
-	
+
 	/**
 	 * Instantiates a new connection.
 	 *
-	 * @param URL the url
+	 * @param URL   the url
 	 * @param uName the u name
 	 * @param psswd the psswd
 	 */
-	public DatabaseConnection (String URL, String uName, String psswd) {
+	public DatabaseConnection(String URL, String uName, String psswd) {
 		this.url = URL;
 		this.username = uName;
 		this.password = psswd;
 	}
-	
-	
-    /**
-     * Convert entry to blob.
-     *
-     * @param entry the entry
-     * @return the blob
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    private Blob convertEntryToBlob(Entry entry) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();                 
-		ObjectOutputStream objOstream = new ObjectOutputStream(baos);                 
-		objOstream.writeObject(entry);                   
-		objOstream.flush();                 
-		objOstream.close();                   
-		byte[] bArray = baos.toByteArray(); 
-		
-	    Blob blob = null;
-	    try {
+
+	/**
+	 * Convert entry to blob.
+	 *
+	 * @param entry the entry
+	 * @return the blob
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	private Blob convertEntryToBlob(Entry entry) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream objOstream = new ObjectOutputStream(baos);
+		objOstream.writeObject(entry);
+		objOstream.flush();
+		objOstream.close();
+		byte[] bArray = baos.toByteArray();
+
+		Blob blob = null;
+		try {
 			blob = new SerialBlob(bArray);
 		} catch (SerialException e1) {
 			// TODO Auto-generated catch block
@@ -80,53 +80,49 @@ public class DatabaseConnection {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-	    return blob;
-    }
-    
-    /**
-     * From byte array to object.
-     *
-     * @param byteArr the byte arr
-     * @return the object
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ClassNotFoundException the class not found exception
-     */
-    private static Object fromByteArrayToObject(byte[] byteArr) throws IOException, ClassNotFoundException {
+		return blob;
+	}
+
+	/**
+	 * From byte array to object.
+	 *
+	 * @param byteArr the byte arr
+	 * @return the object
+	 * @throws IOException            Signals that an I/O exception has occurred.
+	 * @throws ClassNotFoundException the class not found exception
+	 */
+	private static Object fromByteArrayToObject(byte[] byteArr) throws IOException, ClassNotFoundException {
 		if (Objects.nonNull(byteArr)) {
-		ByteArrayInputStream bis =
-		        new ByteArrayInputStream(byteArr);
-		ObjectInput in = new ObjectInputStream(bis);
-		return in.readObject();
+			ByteArrayInputStream bis = new ByteArrayInputStream(byteArr);
+			ObjectInput in = new ObjectInputStream(bis);
+			return in.readObject();
 		}
 		return null;
-    }
-	
+	}
+
 	/**
 	 * Convert blob to entry.
 	 *
 	 * @param blob the blob
 	 * @return the entry
 	 * @throws ClassNotFoundException the class not found exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws SQLException the SQL exception
+	 * @throws IOException            Signals that an I/O exception has occurred.
+	 * @throws SQLException           the SQL exception
 	 */
 	private Entry convertBlobToEntry(Blob blob) throws ClassNotFoundException, IOException, SQLException {
-		int blobLength = (int) blob.length();  
+		int blobLength = (int) blob.length();
 		byte[] blobAsBytes = blob.getBytes(1, blobLength);
 		return (Entry) fromByteArrayToObject(blobAsBytes);
-		
+
 	}
-   
-    
-    
-	
+
 	/**
 	 * Adds the entry.
 	 *
 	 * @param entry the entry
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void addEntry(Entry entry) throws IOException {				
+	public void addEntry(Entry entry) throws IOException {
 
 		String sql = "INSERT INTO blobs (Name, data) VALUES (?, ?)";
 		PreparedStatement statement;
@@ -145,12 +141,7 @@ public class DatabaseConnection {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
-	
-	
+
 	/**
 	 * Gets the entry.
 	 *
@@ -159,21 +150,21 @@ public class DatabaseConnection {
 	 * @throws SQLException the SQL exception
 	 */
 	public Entry getEntry(String name) throws SQLException {
-		String sql = "SELECT data FROM blobs where Name='"+name+"'";
-		 
+		String sql = "SELECT data FROM blobs where Name='" + name + "'";
+
 		Statement statement = con.createStatement();
 		ResultSet result = statement.executeQuery(sql);
-		 
+
 		int count = 0;
 		Blob blob = null;
-		while (result.next()){
-		    
+		while (result.next()) {
+
 			blob = result.getBlob(1);
 		}
-		
+
 		Entry out = null;
 		try {
-			out = convertBlobToEntry(blob);			
+			out = convertBlobToEntry(blob);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -183,13 +174,14 @@ public class DatabaseConnection {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			System.out.println("*no such entry");
 		}
-		
+
 		return out;
-		
+
 	}
-	
-	
+
 	/**
 	 * Open connection.
 	 */
@@ -205,7 +197,5 @@ public class DatabaseConnection {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
 }
