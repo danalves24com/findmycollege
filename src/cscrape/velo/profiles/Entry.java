@@ -2,6 +2,7 @@
  * 
  */
 package cscrape.velo.profiles;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -16,95 +17,77 @@ import org.apache.http.entity.SerializableEntity;
 import cscrape.velo.connection.DatabaseConnection;
 import cscrape.velo.profiles.CourseLevel;
 
-
 // TODO: Auto-generated Javadoc
 /**
  * The Class Entry.
  */
 // this class represents a school
 public class Entry implements Serializable {
-    
-    /**
-     * Instantiates a new entry.
-     */
-    public Entry() {
 
- 
+	/**
+	 * Instantiates a new entry.
+	 */
+	public Entry() {
+
 	}
-
 
 	/** The location. */
 	private String name, location, gender, selectionType;
 	private URI source, page;
 
 	/** The population. */
-	private Integer population, admissionRate, studentEnrollment, academicStaff, internationalUndergradCost, internationalGradCost;
-	
+	private Integer population, admissionRate, studentEnrollment, academicStaff, internationalUndergradCost,
+			internationalGradCost;
 
 	public Integer getInternationalUndergradCost() {
 		return internationalUndergradCost;
 	}
 
-
-
 	public void setInternationalUndergradCost(Integer internationalUndergradCost) {
 		this.internationalUndergradCost = internationalUndergradCost;
 	}
-
-
 
 	public Integer getInternationalGradCost() {
 		return internationalGradCost;
 	}
 
-
-
 	public void setInternationalGradCost(Integer internationalGradCost) {
 		this.internationalGradCost = internationalGradCost;
 	}
-
 
 	/** The is international. */
 	private Boolean isInternational, isSelective;
 	/** The courses. */
 	private ArrayList<Course> courses;
-	
+
 	/** The type. */
 	private SchoolType type;
-	
-	
+
 	/**
 	 * Show.
 	 */
 	public void show() {
 		Class<?> cl = this.getClass();
 		List<Object> allObjects = new ArrayList<Object>();
-		for (java.lang.reflect.Field f: cl.getDeclaredFields())
-		{
-		    f.setAccessible(true);
-		    try
-		    {
-		        Object o = f.get(this);
-				if(o!=null) {
-					System.out.print(f.getName()+":");
-			        System.out.print("\t"+ o + "\n");	
+		for (java.lang.reflect.Field f : cl.getDeclaredFields()) {
+			f.setAccessible(true);
+			try {
+				Object o = f.get(this);
+				if (o != null) {
+					System.out.print(f.getName() + ":");
+					System.out.print("\t" + o + "\n");
 				}
-		        		        
-		    }
-		    catch (Exception e)
-		    {
-		        e.printStackTrace();
-		    }
-		}
-		for (Object o: allObjects) {
 
-		}		    
-		
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		for (Object o : allObjects) {
+
+		}
 
 	}
-	
-	
-	
+
 	/**
 	 * Gets the checks if is selective.
 	 *
@@ -113,7 +96,6 @@ public class Entry implements Serializable {
 	public Boolean getIsSelective() {
 		return isSelective;
 	}
-
 
 	/**
 	 * Gets the student enrollment.
@@ -124,8 +106,6 @@ public class Entry implements Serializable {
 		return studentEnrollment;
 	}
 
-
-
 	/**
 	 * Sets the student enrollment.
 	 *
@@ -134,8 +114,6 @@ public class Entry implements Serializable {
 	public void setStudentEnrollment(Integer studentEnrollment) {
 		this.studentEnrollment = studentEnrollment;
 	}
-
-
 
 	/**
 	 * Gets the academic staff.
@@ -146,8 +124,6 @@ public class Entry implements Serializable {
 		return academicStaff;
 	}
 
-
-
 	/**
 	 * Sets the academic staff.
 	 *
@@ -156,7 +132,6 @@ public class Entry implements Serializable {
 	public void setAcademicStaff(Integer academicStaff) {
 		this.academicStaff = academicStaff;
 	}
-
 
 	/**
 	 * Sets the checks if is selective.
@@ -167,11 +142,6 @@ public class Entry implements Serializable {
 		this.isSelective = isSelective;
 	}
 
-
-
-
-
-
 	/**
 	 * Gets the population.
 	 *
@@ -181,11 +151,6 @@ public class Entry implements Serializable {
 		return population;
 	}
 
-
-
-
-		
-	
 	/**
 	 * Correct string.
 	 *
@@ -197,9 +162,7 @@ public class Entry implements Serializable {
 		correctedInput = input.trim();
 		return correctedInput;
 	}
-	
-	
-	
+
 	/**
 	 * Gets the name.
 	 *
@@ -208,7 +171,6 @@ public class Entry implements Serializable {
 	public String getName() {
 		return name;
 	}
-
 
 	/**
 	 * Sets the name.
@@ -219,7 +181,6 @@ public class Entry implements Serializable {
 		this.name = name;
 	}
 
-
 	/**
 	 * Gets the location.
 	 *
@@ -228,7 +189,6 @@ public class Entry implements Serializable {
 	public String getLocation() {
 		return location;
 	}
-
 
 	/**
 	 * Sets the location.
@@ -239,8 +199,6 @@ public class Entry implements Serializable {
 		this.location = location;
 	}
 
-	
-
 	/**
 	 * Sets the population.
 	 *
@@ -250,7 +208,6 @@ public class Entry implements Serializable {
 		this.population = population;
 	}
 
-
 	/**
 	 * Gets the courses.
 	 *
@@ -259,7 +216,6 @@ public class Entry implements Serializable {
 	public ArrayList<Course> getCourses() {
 		return courses;
 	}
-
 
 	/**
 	 * Adds the course.
@@ -279,9 +235,6 @@ public class Entry implements Serializable {
 		this.courses = courses;
 	}
 
-
-
-
 	/**
 	 * Gets the type.
 	 *
@@ -291,7 +244,6 @@ public class Entry implements Serializable {
 		return type;
 	}
 
-
 	/**
 	 * Sets the type.
 	 *
@@ -300,7 +252,7 @@ public class Entry implements Serializable {
 	public void setType(SchoolType type) {
 		this.type = type;
 	}
-	
+
 	/**
 	 * Gets the gender.
 	 *
@@ -309,8 +261,6 @@ public class Entry implements Serializable {
 	public String getGender() {
 		return gender;
 	}
-
-
 
 	/**
 	 * Sets the gender.
@@ -321,8 +271,6 @@ public class Entry implements Serializable {
 		this.gender = gender;
 	}
 
-
-
 	/**
 	 * Gets the selection type.
 	 *
@@ -331,8 +279,6 @@ public class Entry implements Serializable {
 	public String getSelectionType() {
 		return selectionType;
 	}
-
-
 
 	/**
 	 * Sets the selection type.
@@ -343,8 +289,6 @@ public class Entry implements Serializable {
 		this.selectionType = selectionType;
 	}
 
-
-
 	/**
 	 * Gets the admission rate.
 	 *
@@ -353,8 +297,6 @@ public class Entry implements Serializable {
 	public Integer getAdmissionRate() {
 		return admissionRate;
 	}
-
-
 
 	/**
 	 * Sets the admission rate.
@@ -365,8 +307,6 @@ public class Entry implements Serializable {
 		this.admissionRate = admissionRate;
 	}
 
-
-
 	/**
 	 * Gets the checks if is international.
 	 *
@@ -376,8 +316,6 @@ public class Entry implements Serializable {
 		return isInternational;
 	}
 
-
-
 	/**
 	 * Sets the checks if is international.
 	 *
@@ -386,30 +324,22 @@ public class Entry implements Serializable {
 	public void setIsInternational(Boolean isInternational) {
 		this.isInternational = isInternational;
 	}
-	
+
 	public URI getSource() {
 		return source;
 	}
-
-
 
 	public void setSource(URI source) {
 		this.source = source;
 	}
 
-
-
 	public URI getPage() {
 		return page;
 	}
 
-
-
 	public void setPage(URI page) {
 		this.page = page;
 	}
-
-
 
 	/**
 	 * Upload self.
@@ -424,10 +354,5 @@ public class Entry implements Serializable {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
 
-	
-	
 }
