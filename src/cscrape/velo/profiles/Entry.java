@@ -7,6 +7,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +35,34 @@ public class Entry implements Serializable {
 
 	/** The location. */
 	private String name, location, gender, selectionType;
-	
+	private URI source, page;
 
 	/** The population. */
-	private Integer population, admissionRate, studentEnrollment, academicStaff;
+	private Integer population, admissionRate, studentEnrollment, academicStaff, internationalUndergradCost, internationalGradCost;
 	
+
+	public Integer getInternationalUndergradCost() {
+		return internationalUndergradCost;
+	}
+
+
+
+	public void setInternationalUndergradCost(Integer internationalUndergradCost) {
+		this.internationalUndergradCost = internationalUndergradCost;
+	}
+
+
+
+	public Integer getInternationalGradCost() {
+		return internationalGradCost;
+	}
+
+
+
+	public void setInternationalGradCost(Integer internationalGradCost) {
+		this.internationalGradCost = internationalGradCost;
+	}
+
 
 	/** The is international. */
 	private Boolean isInternational, isSelective;
@@ -62,7 +86,7 @@ public class Entry implements Serializable {
 		    {
 		        Object o = f.get(this);
 				if(o!=null) {
-					System.out.print(f.getName());
+					System.out.print(f.getName()+":");
 			        System.out.print("\t"+ o + "\n");	
 				}
 		        		        
@@ -363,6 +387,30 @@ public class Entry implements Serializable {
 		this.isInternational = isInternational;
 	}
 	
+	public URI getSource() {
+		return source;
+	}
+
+
+
+	public void setSource(URI source) {
+		this.source = source;
+	}
+
+
+
+	public URI getPage() {
+		return page;
+	}
+
+
+
+	public void setPage(URI page) {
+		this.page = page;
+	}
+
+
+
 	/**
 	 * Upload self.
 	 *

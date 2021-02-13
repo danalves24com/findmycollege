@@ -5,6 +5,9 @@ package cscrape.global.scrapers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +36,8 @@ public class ICU_scraper implements scraper {
 	private String nameXpath = "/html/body/div[3]/div[4]/div[1]/div/div[2]/table/tbody/tr[1]/td/a",
 			admissionsTable = "/html/body/div[3]/div[7]/div[2]/div/div[2]/table/tbody/tr",
 			sizeAndProfileTable = "/html/body/div[3]/div[8]/div[2]/div/div[1]/table/tbody/tr",
-			facilitiesAndServices = "/html/body/div[3]/div[9]/div[2]/div/div";
+			facilitiesAndServices = "/html/body/div[3]/div[9]/div[2]/div/div",
+			internationalCosts = "/html/body/div[3]/div[6]/div[2]/div/table/tbody/tr[2]/td/strong/text()[2]";
 	
 	
 	/** The country codes. */
@@ -82,9 +86,10 @@ public class ICU_scraper implements scraper {
 	 * @throws FailingHttpStatusCodeException the failing http status code exception
 	 * @throws MalformedURLException the malformed URL exception
 	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws SQLException 
 	 */
 	@Override
-	public void srape() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
+	public void srape() throws FailingHttpStatusCodeException, MalformedURLException, IOException, SQLException {
 		for(String cc : countryCodes) {
 			HtmlPage unis = client.getPage(api(cc.toLowerCase()));
 			List<?> unisForCountry = unis.getByXPath("/html/body/div[2]/div/div[2]/div/table/tbody/tr/td[2]/a");
@@ -93,10 +98,15 @@ public class ICU_scraper implements scraper {
 				link = "https://www.4icu.org" + link;
 				System.out.println(link);
 				HtmlPage s = client.getPage(link);
-				if(s.getWebResponse().getStatusCode() != 404) {
-					generateReportFromPage(s);	
+				try {
+					if(s.getWebResponse().getStatusCode() != 404) {
+						generateReportFromPage(s);	
+					}
+					else {}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else {}
 
 			}
 		}
@@ -136,9 +146,10 @@ public class ICU_scraper implements scraper {
 	 * Generate report from page.
 	 *
 	 * @param page the page
+	 * @throws SQLException 
 	 */
 	@Override
-	public void generateReportFromPage(HtmlPage page) {
+	public void generateReportFromPage(HtmlPage page) throws SQLException {
 		Entry E = new Entry();
 		List<?> names = page.getByXPath(nameXpath);
 		Boolean isValid = false;
@@ -149,7 +160,20 @@ public class ICU_scraper implements scraper {
 				isValid=true;
 			}
 		}
+		Entry prev = (new DatabaseConnection()).getEntry(E.getName());		
+		if(prev!=null) {
+			isValid=false;
+			E = prev;
+			System.out.println("!!!!!!!!!!! already Exists !!!!!!!!");
+		}
+		
 		if(isValid) {
+			try {
+				E.setSource((new URI(page.getBaseURI())));
+			} catch (URISyntaxException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			List<?> params = page.getByXPath(admissionsTable);
 			for(Object param : params) {
 				HtmlTableRow row = ((HtmlTableRow) param);				
@@ -210,13 +234,13 @@ public class ICU_scraper implements scraper {
 					
 					if(title.contains("enrollment")) {
 						String e = body;
-						if(e.contains("-")) {e = e.split("-")[1];} else {}
+						if(e.contains("-")) {e = e.split("-")[1].replaceAll(",", "");} else {}
 						E.setStudentEnrollment(Integer.valueOf(e));
 					}
 					
 					else if (title.contains("staff")) {
 						String s = body;
-						if(s.contains("-")) {s = s.split("-")[1];}
+						if(s.contains("-")) {s = s.split("-")[1].replaceAll(",", "");}
 						E.setAcademicStaff(Integer.valueOf(s));
 					}
 					
@@ -227,9 +251,17 @@ public class ICU_scraper implements scraper {
 				
 			}
 			
+			List<?> costs = page.getByXPath(internationalCosts);
 			
 			
 			
+			if(costs.size() > 0) {	
+				E.setInternationalUndergradCost(Integer.valueOf(String.valueOf(costs.get(0).toString()).split("-")[1].replaceAll("\\D", "")));					
+				//System.out.println(costs.get(1));
+				//E.setInternationalUndergradCost(Integer.valueOf(costsList[0]));
+			}
+			
+			E.UploadSelf(new DatabaseConnection());
 			E.show();
 			try {
 				TimeUnit.SECONDS.sleep(4);
@@ -237,11 +269,11 @@ public class ICU_scraper implements scraper {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			E.UploadSelf(new DatabaseConnection());
 		}
 		else {
 			
 		}
+
 		
 	}
 	

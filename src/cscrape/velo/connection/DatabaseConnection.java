@@ -147,10 +147,7 @@ public class DatabaseConnection {
 	}
 	
 	
-	
-	
-	
-	
+		
 	/**
 	 * Gets the entry.
 	 *
@@ -183,6 +180,8 @@ public class DatabaseConnection {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			System.out.println("*no such entry");
 		}
 		
 		return out;
