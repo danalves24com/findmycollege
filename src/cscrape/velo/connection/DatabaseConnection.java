@@ -55,6 +55,17 @@ public class DatabaseConnection {
 		this.password = psswd;
 	}
 
+	private byte[] fromObjectToByteArray(Object obj) throws IOException {
+		if (Objects.nonNull(obj)) {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			try (ObjectOutputStream os = new ObjectOutputStream(bos)) {
+				os.writeObject(obj);
+			}
+			return bos.toByteArray();
+		}
+		return null;
+	}
+
 	/**
 	 * Convert entry to blob.
 	 *
@@ -63,12 +74,7 @@ public class DatabaseConnection {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private Blob convertEntryToBlob(Entry entry) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream objOstream = new ObjectOutputStream(baos);
-		objOstream.writeObject(entry);
-		objOstream.flush();
-		objOstream.close();
-		byte[] bArray = baos.toByteArray();
+		byte[] bArray = fromObjectToByteArray(entry);
 
 		Blob blob = null;
 		try {
@@ -91,7 +97,7 @@ public class DatabaseConnection {
 	 * @throws IOException            Signals that an I/O exception has occurred.
 	 * @throws ClassNotFoundException the class not found exception
 	 */
-	private static Object fromByteArrayToObject(byte[] byteArr) throws IOException, ClassNotFoundException {
+	private Object fromByteArrayToObject(byte[] byteArr) throws IOException, ClassNotFoundException {
 		if (Objects.nonNull(byteArr)) {
 			ByteArrayInputStream bis = new ByteArrayInputStream(byteArr);
 			ObjectInput in = new ObjectInputStream(bis);
@@ -140,6 +146,36 @@ public class DatabaseConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<Entry> getAll() throws SQLException, ClassNotFoundException, IOException {
+		ArrayList<Entry> all = new ArrayList<Entry>();
+		String sql = "SELECT data FROM blobs";
+
+		Statement statement = con.createStatement();
+		ResultSet result = statement.executeQuery(sql);
+
+		int count = 0;
+		Blob blob = null;
+		while (result.next()) {
+			
+			Entry out = null;
+			
+			try {
+				out = convertBlobToEntry(result.getBlob(1));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			} catch (NullPointerException e) {
+				System.out.println("*no such entry");
+			}
+			if (out != null) {
+				all.add(out);
+			} else {
+			}
+		}
+
+		return all;
 	}
 
 	/**
