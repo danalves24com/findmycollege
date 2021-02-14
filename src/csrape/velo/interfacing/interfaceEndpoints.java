@@ -25,7 +25,7 @@ public class interfaceEndpoints {
 	@GetMapping("/f/{school}")
 	public String school(@PathVariable(value = "school") String name) {
 		try {
-			return (new DatabaseConnection()).getEntry(name).getReport();
+			return (new DatabaseConnection()).getEntry(name).getReport("verbose");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,7 +40,7 @@ public class interfaceEndpoints {
 		try {
 			ArrayList<Entry> out = (new DatabaseConnection()).getAll();
 			for(Entry ref : out) {
-				dump+=ref.getReport();
+				dump+=ref.getReport("verbose");
 			}
 		} catch (ClassNotFoundException | SQLException | IOException e) {
 			// TODO Auto-generated catch block
