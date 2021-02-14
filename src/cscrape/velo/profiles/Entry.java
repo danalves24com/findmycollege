@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.entity.SerializableEntity;
 
@@ -67,8 +68,8 @@ public class Entry implements Serializable {
 
 	
 	
-	public String getReport() {
-		HashMap<String, String> index = new HashMap<String, String>();
+	public String getReport(String type) {
+		Map<String, String> index = new HashMap<String, String>();
 		Class<?> cl = this.getClass();
 		List<Object> allObjects = new ArrayList<Object>();
 		for (java.lang.reflect.Field f : cl.getDeclaredFields()) {
@@ -77,13 +78,25 @@ public class Entry implements Serializable {
 				Object o = f.get(this);
 				if (o != null) {
 					index.put(f.getName(), String.valueOf(o));
+
+					
 				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		return index.toString();
+		switch(type) {
+		case "verbose":
+			String rep="------------ <br>";
+			for(Map.Entry<String, String> i : index.entrySet()) {
+				rep+=(i.getKey() + "   >>   " + i.getValue()) + "<br>";
+			}
+			return rep;			
+		default:
+			return index.toString();
+	}
+		
 	}
 	
 	
