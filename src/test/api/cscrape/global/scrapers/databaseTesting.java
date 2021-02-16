@@ -1,4 +1,4 @@
-package cscrape.global.testing;
+package api.cscrape.global.scrapers;
 
 
 

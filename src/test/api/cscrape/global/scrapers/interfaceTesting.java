@@ -1,5 +1,6 @@
-package cscrape.global.testing;
+package api.cscrape.global.scrapers;
 import csrape.velo.interfacing.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
